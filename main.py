@@ -6,7 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-openAi_key = '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'
+openAi_key = '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' #Personal
 
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
@@ -45,7 +45,7 @@ def get_chat_completion(query):
         print(f"Got a response from OpenAI for query {query}")
         return response['choices'][0]['message']['content']
     except:
-        print(f"failed{query}")
+        print(f"failed {query}")
 
 
 @app.route('/api/search', methods=['GET'])
