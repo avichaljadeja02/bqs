@@ -43,7 +43,7 @@ def get_chat_completion(query):
             frequency_penalty=0,
             presence_penalty=0
         )
-        print(f"Got a response from OpenAI for query {query}")
+        print(f"Got a response from OpenAI for query {query} response - {response['choices'][0]['message']['content']}")
         return response['choices'][0]['message']['content']
     except:
         print(f"failed {query}")
