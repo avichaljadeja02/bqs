@@ -13,7 +13,7 @@ openAi_key = os.getenv('key')
 openai.api_key = openAi_key
 openai.Model.list()
 
-columns = """PLAYER Paul Skenes, 
+columns = """PLAYER NAME Paul Skenes, 
              YEAR 2023,
              RD 1,
              PICK 1,
@@ -51,7 +51,7 @@ def get_chat_completion(query):
 
 @app.route('/api/search', methods=['GET'])
 def query_search():
-    query = request.args.get('q', '').lower()
+    query = request.args.get('q', '')
     print("Got request for " + query)
 
     if not query:
