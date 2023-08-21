@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from flask import Flask, request, jsonify
 import openai
@@ -6,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-openAi_key = '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' #Personal
+openAi_key = os.getenv("key")
 
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
