@@ -34,7 +34,7 @@ def get_chat_completion(query):
                 {"role": "system",
                  "content": "You are creating MYSQL Queries for this given prompt. Assume everything to be related to baseball terminology. I have given some sample Column values: " + columns},
                 {"role": "user",
-                 "content": "Complete the sql query. Select * from baseball_table ..."},
+                 "content": "Create a mysql query given the following columns and user requirement. The table is baseball_table"},
                 {"role": "assistant", "content": query},
             ],
             temperature=0.02,
