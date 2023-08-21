@@ -43,7 +43,7 @@ def get_chat_completion(query):
             frequency_penalty=0,
             presence_penalty=0
         )
-        print(f"Got a response from OpenAI for query {query} response - {response['choices'][0]['message']['content']}")
+        print(f"Got a response from OpenAI for query {query} response")
         return response['choices'][0]['message']['content']
     except:
         print(f"failed {query}")
@@ -65,10 +65,6 @@ def query_search():
 
         # Fetch all rows from the result set
         rows = cursor.fetchall()
-
-        # Display the fetched data
-        for row in rows:
-            print(row)
     except sqlite3.Error as e:
         print(f"Error fetching data: {e}")
     finally:
