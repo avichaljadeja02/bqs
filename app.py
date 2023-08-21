@@ -7,13 +7,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-openAi_key = os.getenv('key')
-
+# openAi_key = os.getenv('key')
+openAi_key = "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"
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
 openai.Model.list()
 
-columns = """PLAYER NAME Paul Skenes, 
+columns = """NAME Paul Skenes, 
              YEAR 2023,
              RD 1,
              PICK 1,
@@ -34,7 +34,7 @@ def get_chat_completion(query):
                 {"role": "system",
                  "content": "You are creating MYSQL Queries for this given prompt. Assume everything to be related to baseball terminology. I have given some sample Column values: " + columns},
                 {"role": "user",
-                 "content": "Create a mysql query given the following columns and user requirement. The table is baseball_table"},
+                 "content": "Create a mysql query given the following columns and user requirement. Ensure the query is contains or like instead of an exact match (case might be different as well). If the field is not clear, assume it is on name The table is baseball_table"},
                 {"role": "assistant", "content": query},
             ],
             temperature=0.02,
@@ -53,7 +53,6 @@ def get_chat_completion(query):
 def query_search():
     query = request.args.get('q', '')
     print("Got request for " + query)
-
     if not query:
         return jsonify([])
     sqlQuery = get_chat_completion(query)
@@ -73,3 +72,6 @@ def query_search():
         conn.close()
         return jsonify(rows)
 
+
+if __name__ == "__main__":
+    app.run(port=8000)
