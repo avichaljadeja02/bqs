@@ -3,12 +3,12 @@ import sqlite3
 from flask import Flask, request, jsonify
 import openai
 from flask_cors import CORS
+from math import ceil
 
 app = Flask(__name__)
 CORS(app)
 
 openAi_key = os.getenv('key')
-# openAi_key = "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"
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
 openai.Model.list()
@@ -71,11 +71,13 @@ def query_search():
     cursor = conn.cursor()
     rows = []
     paginated_rows = []
+    total_pages = 0  # Variable to store the total number of pages
+
     try:
         cursor.execute(sqlQuery)
-
-        # Fetch a specific range of rows based on pagination
         rows = cursor.fetchall()
+        total_pages = ceil(len(rows) / limit)  # Calculate total pages
+
         start_idx = (page - 1) * limit
         end_idx = start_idx + limit
         paginated_rows = rows[start_idx:end_idx]
@@ -84,4 +86,8 @@ def query_search():
     finally:
         cursor.close()
         conn.close()
-        return jsonify(paginated_rows)
+        response_data = {
+            "total_pages": total_pages,
+            "data": paginated_rows
+        }
+        return jsonify(response_data)
