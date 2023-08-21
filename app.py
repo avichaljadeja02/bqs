@@ -7,8 +7,8 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# openAi_key = os.getenv('key')
-openAi_key = "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"
+openAi_key = os.getenv('key')
+# openAi_key = "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"
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
 openai.Model.list()
@@ -43,8 +43,14 @@ def get_chat_completion(query):
             frequency_penalty=0,
             presence_penalty=0
         )
-        print(f"Got a response from OpenAI for query {query} response")
-        return response['choices'][0]['message']['content']
+        start_index = response['choices'][0]['message']['content'].find("SELECT")
+        end_index = response['choices'][0]['message']['content'].find(";", start_index) + 1
+
+        # Extract the SQL query
+        sql_query = response['choices'][0]['message']['content'][start_index:end_index]
+
+        print(f"Got a response from OpenAI for query {query} response {sql_query}")
+        return sql_query
     except:
         print(f"failed {query}")
 
@@ -52,26 +58,30 @@ def get_chat_completion(query):
 @app.route('/api/search', methods=['GET'])
 def query_search():
     query = request.args.get('q', '')
-    print("Got request for " + query)
+    page = int(request.args.get('page', 1))  # Default page is 1
+    limit = int(request.args.get('limit', 10))  # Default limit is 10
+
+    print(f"Got request for '{query}', page {page}, limit {limit}")
+
     if not query:
         return jsonify([])
+
     sqlQuery = get_chat_completion(query)
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     rows = []
+    paginated_rows = []
     try:
         cursor.execute(sqlQuery)
 
-        # Fetch all rows from the result set
+        # Fetch a specific range of rows based on pagination
         rows = cursor.fetchall()
+        start_idx = (page - 1) * limit
+        end_idx = start_idx + limit
+        paginated_rows = rows[start_idx:end_idx]
     except sqlite3.Error as e:
         print(f"Error fetching data: {e}")
     finally:
-        # Close the cursor and connection
         cursor.close()
         conn.close()
-        return jsonify(rows)
-
-
-if __name__ == "__main__":
-    app.run(port=8000)
+        return jsonify(paginated_rows)
