@@ -6,7 +6,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-openAi_key = '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' #Personal
+openAi_key = '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' #Personal
 
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
