@@ -7,7 +7,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-openAi_key = os.getenv("key")
+openAi_key = os.getenv('key')
 
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
@@ -77,5 +77,3 @@ def query_search():
         conn.close()
         return jsonify(rows)
 
-if __name__ == '__main__':
-    app.run(port=5000)
