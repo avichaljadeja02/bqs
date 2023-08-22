@@ -9,21 +9,22 @@ app = Flask(__name__)
 CORS(app)
 
 openAi_key = os.getenv('key')
+openAi_key = "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"
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
 openai.Model.list()
 
-columns = """NAME Paul Skenes, 
-             YEAR 2023,
-             RD 1,
-             PICK 1,
-             TEAM Pittsburgh Pirates,
-             POS RHP/LHP/OF/3B/C/TWP/SS,
-             SCHOOL LSU,
-             TYPE 4YR,
-             ST LA,
-             SIGNED N,
-             BONUS EMPTY/10,000.1"""
+columns = """NAME, Example value - Paul Skenes, 
+             YEAR, Example value - 2023,
+             RD (round), Example value - 1,
+             PICK, Example value - 1,
+             TEAM, Example value - Pittsburgh Pirates,
+             POS, Example value - RHP/LHP/OF/3B/C/TWP/SS,
+             SCHOOL, Example value - LSU,
+             TYPE, Example value - 4YR,
+             ST, Example value - LA,
+             SIGNED, Example value - N,
+             BONUS, Example value - EMPTY/10,000.1"""
 
 
 def get_chat_completion(query):
@@ -34,7 +35,7 @@ def get_chat_completion(query):
                 {"role": "system",
                  "content": "You are creating MYSQL Queries for this given prompt. Assume everything to be related to baseball terminology. I have given some sample Column values: " + columns},
                 {"role": "user",
-                 "content": "Create a mysql query given the following columns and user requirement. Ensure the query is contains or like instead of an exact match (case might be different as well). If the field is not clear, assume it is on name The table is baseball_table"},
+                 "content": "Create a mysql query given the following columns and user requirement. Ensure the query is contains or like instead of an exact match (case might be different as well). If the field is not clear, do a generic match on all columns. The table is baseball_table and end the query with a ;. Ensure you return a runnable sql query"},
                 {"role": "assistant", "content": query},
             ],
             temperature=0.02,
@@ -48,8 +49,21 @@ def get_chat_completion(query):
 
         # Extract the SQL query
         sql_query = response['choices'][0]['message']['content'][start_index:end_index]
-
-        print(f"Got a response from OpenAI for query {query} response {sql_query}")
+        if sql_query == '"' or sql_query is None or len(sql_query) < 2 or sql_query == "":
+            sql_query = """SELECT *
+                        FROM baseball_table
+                        WHERE NAME LIKE '%""" + query + """%' OR
+                        CAST(YEAR AS VARCHAR) LIKE '%""" + query + """%' OR
+                        CAST(RD AS VARCHAR) LIKE '%""" + query + """%' OR
+                        CAST(PICK AS VARCHAR) LIKE '%""" + query + """%' OR
+                        TEAM LIKE '%""" + query + """%' OR
+                        POS LIKE '%""" + query + """%' OR
+                        SCHOOL LIKE '%""" + query + """%' OR
+                        TYPE LIKE '%""" + query + """%' OR
+                        ST LIKE '%""" + query + """%' OR
+                        SIGNED LIKE '%""" + query + """%' OR
+                        BONUS LIKE '%""" + query + """%'"""
+        print(f"sql query {sql_query}")
         return sql_query
     except:
         print(f"failed {query}")
@@ -91,3 +105,6 @@ def query_search():
             "data": paginated_rows
         }
         return jsonify(response_data)
+
+if __name__ == "__main__":
+    app.run(port = 8000)
