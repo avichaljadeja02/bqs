@@ -9,7 +9,6 @@ app = Flask(__name__)
 CORS(app)
 
 openAi_key = os.getenv('key')
-openAi_key = "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"
 # Set up your OpenAI API credentials
 openai.api_key = openAi_key
 openai.Model.list()
@@ -106,5 +105,3 @@ def query_search():
         }
         return jsonify(response_data)
 
-if __name__ == "__main__":
-    app.run(port = 8000)
