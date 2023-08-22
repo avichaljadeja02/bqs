@@ -89,7 +89,7 @@ def query_search():
     try:
         cursor.execute(sqlQuery)
         rows = cursor.fetchall()
-        total_pages = ceil(len(rows) / limit)  # Calculate total pages
+        total_pages = ceil(len(rows) / limit)
 
         start_idx = (page - 1) * limit
         end_idx = start_idx + limit
@@ -101,7 +101,8 @@ def query_search():
         conn.close()
         response_data = {
             "total_pages": total_pages,
-            "data": paginated_rows
+            "data": paginated_rows,
+            "total_results": len(rows)
         }
         return jsonify(response_data)
 
